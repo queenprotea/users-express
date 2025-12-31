@@ -21,5 +21,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Rutas
 app.use('/api/usuarios', require('./routes/usuarios'));
 
+app.use('/api/auth', require('./routes/auth'));
+
 
 module.exports = app;

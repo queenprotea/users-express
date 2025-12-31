@@ -1,24 +1,37 @@
-const Usuario = require('../../users-express/models/Usuario');
+const Usuario = require('../models/Usuario');
 
-// Crear usuario
+const bcrypt = require('bcryptjs');
+
 const crearUsuario = async (req, res) => {
     try {
         const { nombre, email, pass } = req.body;
 
-        // Validaciones básicas
         if (!nombre || !email || !pass) {
             return res.status(400).json({
                 error: 'Nombre, email y password son obligatorios'
             });
         }
 
-        const usuario = await Usuario.create({ nombre, email, pass });
-        res.status(201).json(usuario);
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(pass, salt);
+
+        const usuario = await Usuario.create({
+            nombre,
+            email,
+            pass: passwordHash
+        });
+
+        res.status(201).json({
+            id: usuario.id,
+            nombre: usuario.nombre,
+            email: usuario.email
+        });
 
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
+
 
 // Obtener usuarios
 const obtenerUsuarios = async (req, res) => {
